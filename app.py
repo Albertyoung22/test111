@@ -89,6 +89,19 @@ def init_db():
 # Initialize DB on start
 init_db()
 
+# ==========================================
+# 網頁資訊安全防禦機制 (符合 ISO 27001 精神)
+# ==========================================
+@app.after_request
+def add_security_headers(response):
+    # 防止瀏覽器猜測內容類型 (MIME 嗅探)
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    # 防止點擊劫持 (Clickjacking)，禁止網頁被嵌入在惡意網站的 iframe 中
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    # 啟用瀏覽器的跨站腳本 (XSS) 過濾器
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    return response
+
 @app.route('/')
 def index():
     return render_template('index.html')
